@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPI Rakshak - Digital Bodyguard Interactive Preview</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0A0F1D;
+            --surface-dark: #131E35;
+            --card-dark: #1B2845;
+            --safe-green: #10B981;
+            --safe-green-glow: rgba(16, 185, 129, 0.25);
+            --danger-red: #EF4444;
+            --danger-red-glow: rgba(239, 68, 68, 0.35);
+            --warning-gold: #F59E0B;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --accent-blue: #38BDF8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #030712;
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .preview-header {
+            text-align: center;
+            margin-bottom: 20px;
+            max-width: 600px;
+        }
+
+        .preview-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .preview-header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 6px;
+        }
+
+        /* Mobile Frame */
+        .phone-mockup {
+            width: 412px;
+            height: 870px;
+            background: var(--bg-dark);
+            border-radius: 44px;
+            border: 10px solid #1E293B;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(16, 185, 129, 0.15);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 38px;
+            padding: 10px 24px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            z-index: 10;
+        }
+
+        .camera-notch {
+            width: 100px;
+            height: 22px;
+            background: #1E293B;
+            border-radius: 0 0 14px 14px;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Top App Header */
+        .app-header {
+            padding: 14px 20px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #FFF;
+            letter-spacing: -0.5px;
+        }
+
+        .app-tagline {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .toggle-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface-dark);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .toggle-switch {
+            width: 38px;
+            height: 20px;
+            background: var(--safe-green);
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .toggle-knob {
+            width: 16px;
+            height: 16px;
+            background: #FFF;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            transition: 0.3s;
+        }
+
+        /* App Content Viewport */
+        .app-viewport {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 18px 85px;
+            position: relative;
+        }
+
+        .app-viewport::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Screen Views */
+        .screen-view {
+            display: none;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        .screen-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Big Shield Status */
+        .shield-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 12px 0 20px;
+        }
+
+        .shield-outer-pulse {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: var(--safe-green-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s ease;
+            animation: pulse 2.5s infinite;
+        }
+
+        .phone-mockup.threat-active .shield-outer-pulse {
+            background: var(--danger-red-glow);
+            animation: pulse-danger 1.2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.06);
+                opacity: 0.4;
+            }
+        }
+
+        @keyframes pulse-danger {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+
+            50% {
+                transform: scale(1.08);
+                opacity: 0.5;
+            }
+        }
+
+        .shield-inner-circle {
+            width: 124px;
+            height: 124px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #065F46, #022C22);
+            border: 3.5px solid var(--safe-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .phone-mockup.threat-active .shield-inner-circle {
+            background: linear-gradient(145deg, #7F1D1D, #450A0A);
+            border-color: var(--danger-red);
+        }
+
+        .shield-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--safe-green);
+            margin-top: 14px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .phone-mockup.threat-active .shield-title {
+            color: var(--danger-red);
+        }
+
+        .shield-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 4px;
+            line-height: 1.35;
+        }
+
+        /* Threat Active Alert Banner */
+        .threat-banner {
+            display: none;
+            background: #450A0A;
+            border: 1.5px solid var(--danger-red);
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .phone-mockup.threat-active .threat-banner {
+            display: block;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-4px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(4px);
+            }
+        }
+
+        /* Stats Grid */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card {
+            background: var(--surface-dark);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-card.wide {
+            grid-column: span 2;
+            border-color: rgba(245, 158, 11, 0.3);
+            flex-direction: row;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .stat-value.gold {
+            color: var(--safe-green);
+            font-size: 24px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            line-height: 1.3;
+        }
+
+        /* Guardian Card */
+        .guardian-card {
+            background: var(--surface-dark);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .guardian-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .guardian-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .guardian-details h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .guardian-details p {
+            font-size: 12px;
+            color: var(--safe-green);
+        }
+
+        .btn-call-guardian {
+            width: 100%;
+            height: 48px;
+            background: var(--safe-green);
+            border: none;
+            border-radius: 12px;
+            color: #FFF;
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-call-guardian:hover {
+            background: #059669;
+        }
+
+        /* Action Buttons in Home */
+        .action-btn {
+            width: 100%;
+            height: 48px;
+            background: var(--surface-dark);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--card-dark);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            height: 72px;
+            background: var(--surface-dark);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 20;
+            padding: 0 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--safe-green);
+            background: rgba(16, 185, 129, 0.12);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+
+        /* In-Call Warning Banner (Overlay) */
+        .call-overlay-banner {
+            display: none;
+            position: absolute;
+            top: 48px;
+            left: 12px;
+            right: 12px;
+            background: var(--danger-red);
+            color: #FFF;
+            border-radius: 14px;
+            padding: 14px;
+            z-index: 50;
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.6);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* 5-Minute UPI Freeze Blocker Overlay */
+        .freeze-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 15, 29, 0.97);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .freeze-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .cooldown-pill {
+            background: var(--surface-dark);
+            border: 1px solid var(--warning-gold);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: var(--warning-gold);
+            font-weight: 700;
+            font-size: 15px;
+            margin: 18px 0 24px;
+        }
+
+        /* Link Checker & Simulator styles */
+        .form-input {
+            width: 100%;
+            background: var(--surface-dark);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: #FFF;
+            padding: 12px 14px;
+            font-size: 14px;
+            margin: 10px 0 14px;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--safe-green);
+        }
+
+        .sample-chips {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            background: var(--surface-dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .chip.danger {
+            color: #F87171;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .chip.safe {
+            color: #34D399;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        /* Floating Toast */
+        .toast {
+            position: absolute;
+            bottom: 84px;
+            left: 20px;
+            right: 20px;
+            background: #1E293B;
+            border: 1px solid var(--safe-green);
+            color: #FFF;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 12px;
+            display: none;
+            z-index: 150;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="preview-header">
+        <h1>🛡️ UPI Rakshak - Digital Bodyguard</h1>
+        <p>Live Interactive Companion Simulator • Senior Citizen Fraud Defense</p>
+    </div>
+
+    <!-- Mobile Phone Mockup -->
+    <div class="phone-mockup" id="phoneContainer">
+        <div class="camera-notch"></div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span>16:45</span>
+            <div style="display: flex; gap: 6px;">
+                <span>5G</span>
+                <span>88%</span>
+            </div>
+        </div>
+
+        <!-- In-Call Floating Alert Banner -->
+        <div class="call-overlay-banner" id="callWarningBanner">
+            <div style="font-weight: 800; font-size: 15px; margin-bottom: 4px;">🚨 FRAUD CALL DETECTED - Don't Pay!
+            </div>
+            <div style="font-size: 12px; opacity: 0.9; margin-bottom: 8px;">सावधान: फ्रॉड कॉल! पुलिस/CBI बनकर धमका रहे
+                हैं।
+            </div>
+            <button onclick="dismissCallWarning()"
+                style="background:#FFF; color:#EF4444; border:none; padding:4px 10px; border-radius:6px; font-weight:700; font-size:11px; cursor:pointer;">Dismiss</button>
+        </div>
+
+        <!-- 5-Minute UPI Freeze Blocker Overlay -->
+        <div class="freeze-overlay" id="freezeOverlay">
+            <div style="font-size: 64px; margin-bottom: 10px;">🛑🛡️</div>
+            <h2 style="color: var(--danger-red); font-size: 22px; font-weight: 800; line-height: 1.2;">
+                TRANSACTION FROZEN<br>
+                <span style="font-size: 16px; font-weight: 700; color: #FFF;">लेन-देन रोका गया</span>
+            </h2>
+            <p style="color: var(--text-secondary); font-size: 13px; margin-top: 10px; max-width: 280px;">
+                Suspicious call urgency detected. Scammer is creating panic to make you pay via PhonePe / GPay.
+            </p>
+
+            <div class="cooldown-pill" id="cooldownTimerText">
+                🔒 Security Lock: 04:58
+            </div>
+
+            <button class="btn-call-guardian" onclick="callGuardianAlert()" style="margin-bottom: 8px;">
+                📞 Call Rohan (Son) / बेटे को कॉल करें
+            </button>
+
+            <button onclick="sendWhatsAppAlert()"
+                style="background: #25D366; border: none; color: #FFF; width: 100%; height: 44px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                💬 WhatsApp Alert to Rohan / अलर्ट भेजें
+            </button>
+
+            <button id="btnOverride" onclick="bypassFreeze()"
+                style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); width: 100%; height: 42px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer;">
+                I understand risk, Proceed anyway
+            </button>
+        </div>
+
+        <!-- App Header -->
+        <div class="app-header">
+            <div>
+                <div class="app-title">UPI Rakshak</div>
+                <div class="app-tagline">Digital Bodyguard / डिजिटल अंगरक्षक</div>
+            </div>
+            <div class="toggle-wrap">
+                <span id="shieldToggleLabel"
+                    style="font-size: 12px; font-weight: 700; color: var(--safe-green);">ON</span>
+                <div class="toggle-switch" onclick="toggleShield()">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Viewport for Screens -->
+        <div class="app-viewport">
+
+            <!-- ================= 1. HOME SCREEN ================= -->
+            <div class="screen-view active" id="screenHome">
+
+                <!-- Threat Banner if Active -->
+                <div class="threat-banner" id="threatAlertCard">
+                    <div
+                        style="font-weight: 800; font-size: 14px; color: var(--danger-red); display: flex; align-items: center; gap: 6px;">
+                        ⚠️ SCAM THREAT ACTIVE
+                    </div>
+                    <div style="font-size: 12px; color: #FFF; margin: 4px 0 8px;">
+                        Police impersonation urgency detected. UPI access paused for 5 mins.
+                    </div>
+                    <button onclick="dismissThreat()"
+                        style="background: var(--danger-red); border:none; color:#FFF; font-size:11px; font-weight:700; padding:4px 8px; border-radius:6px; cursor:pointer;">I
+                        am safe now</button>
+                </div>
+
+                <!-- Big Shield Component -->
+                <div class="shield-container">
+                    <div class="shield-outer-pulse">
+                        <div class="shield-inner-circle">
+                            <span id="shieldIcon">🛡️</span>
+                        </div>
+                    </div>
+                    <div class="shield-title" id="shieldTitle">SURAKSHIT / सुरक्षित</div>
+                    <div class="shield-subtitle" id="shieldSubtitle">
+                        Digital Bodyguard is Active & Watching.<br>
+                        आपकी सुरक्षा चालू है - फोन सुरक्षित है।
+                    </div>
+                </div>
+
+                <!-- 3 Stats Cards -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon">🚫</div>
+                        <div class="stat-value" id="blockedCount">3</div>
+                        <div class="stat-label">Scam Calls Blocked<br>रोके गए कॉल</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👨‍👩‍👧</div>
+                        <div class="stat-value" style="color: var(--accent-blue)">1 Guard</div>
+                        <div class="stat-label">Family Protected<br>परिवार की सुरक्षा</div>
+                    </div>
+                    <div class="stat-card wide">
+                        <div style="font-size: 32px;">💰</div>
+                        <div>
+                            <div class="stat-label">Total Money Protected / बचाए गए पैसे</div>
+                            <div class="stat-value gold" id="moneySavedText">₹ 1,45,000</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Saved from digital arrest & fake
+                                payment scams
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guardian Card -->
+                <div class="guardian-card">
+                    <div class="guardian-info">
+                        <div class="guardian-avatar">🛡️</div>
+                        <div class="guardian-details">
+                            <h4>Rohan (Son / बेटा)</h4>
+                            <p>+91 98765 43210 • Emergency Guardian</p>
+                        </div>
+                    </div>
+                    <button class="btn-call-guardian" onclick="callGuardianAlert()">
+                        📞 Call Rohan / तुरंत कॉल करें
+                    </button>
+                </div>
+
+                <!-- Quick Launch Actions -->
+                <div style="font-size: 13px; font-weight: 700; color: var(--text-secondary); margin: 16px 0 8px;">
+                    Quick Simulator Actions:
+                </div>
+                <button class="action-btn" onclick="switchTab('simulator')">
+                    <span>⚡ Test Scam Call Simulator (Digital Arrest)</span>
+                </button>
+                <button class="action-btn" onclick="openUpiFreeze()">
+                    <span>🛑 Preview 5-Minute UPI Freeze Screen</span>
+                </button>
+            </div>
+
+            <!-- ================= 2. LINK CHECKER SCREEN ================= -->
+            <div class="screen-view" id="screenLinkChecker">
+                <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 4px;">UPI Link & QR Scanner</h3>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;">
+                    Detects Payee Mismatch (Fake Army, Police, Electricity Board handles).
+                </p>
+
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Select Test Case or
+                    Paste
+                    URL:</label>
+                <div class="sample-chips" style="margin-top: 6px;">
+                    <div class="chip danger"
+                        onclick="setUpiLink('upi://pay?pa=rahul991@paytm&pn=Indian%20Army%20Canteen&am=2500&cu=INR')">
+                        Army Canteen Fake QR
+                    </div>
+                    <div class="chip danger"
+                        onclick="setUpiLink('upi://pay?pa=quickbill@okhdfcbank&pn=State%20Electricity%20Board&am=1450&cu=INR')">
+                        Electricity Cutoff Scam
+                    </div>
+                    <div class="chip safe"
+                        onclick="setUpiLink('upi://pay?pa=swiggy@icici.corp&pn=Swiggy%20India&am=350&cu=INR')">
+                        Safe Merchant
+                    </div>
+                </div>
+
+                <input type="text" id="upiInput" class="form-input" placeholder="upi://pay?pa=...&pn=...">
+                <button class="btn-call-guardian" onclick="analyzeUpiLink()" style="margin-bottom: 16px;">
+                    🔍 Analyze UPI Payee Security
+                </button>
+
+                <div id="upiResultBox"
+                    style="display: none; background: var(--surface-dark); border-radius: 14px; padding: 14px; border: 1.5px solid var(--danger-red);">
+                    <div id="upiResultTitle"
+                        style="font-size: 16px; font-weight: 800; color: var(--danger-red); margin-bottom: 6px;">
+                        FRAUD DETECTED!
+                    </div>
+                    <div id="upiResultDesc" style="font-size: 12px; color: var(--text-primary); line-height: 1.4;">
+                        Payee claims to be "Indian Army Canteen" but uses personal account (@paytm).
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 3. CALL LOGS SCREEN ================= -->
+            <div class="screen-view" id="screenLogs">
+                <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 4px;">Call Protection Logs</h3>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">
+                    Room DB Call screening and scam intervention history
+                </p>
+
+                <div style="display: flex; flex-direction: column; gap: 10px;" id="logsContainer">
+                    <div
+                        style="background: var(--surface-dark); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 14px; padding: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 14px; font-weight: 700;">+91 98201 54321</span>
+                            <span style="font-size: 10px; color: var(--text-secondary);">Today, 03:15 PM</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--danger-red); font-weight: 700; margin-top: 4px;">
+                            🚨 BLOCKED: CBI Digital Arrest Impersonation
+                        </div>
+                        <div style="font-size: 10px; color: var(--text-secondary); margin-top: 2px;">
+                            "Urgent arrest warrant in 10 min, download AnyDesk immediately..."
+                        </div>
+                    </div>
+
+                    <div
+                        style="background: var(--surface-dark); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 14px; padding: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 14px; font-weight: 700;">+91 99110 88231</span>
+                            <span style="font-size: 10px; color: var(--text-secondary);">Yesterday, 07:40 PM</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--danger-red); font-weight: 700; margin-top: 4px;">
+                            🚨 BLOCKED: Electricity Bill Disconnection Panic
+                        </div>
+                        <div style="font-size: 10px; color: var(--text-secondary); margin-top: 2px;">
+                            "Electricity power will be disconnected at 9:30 PM. Pay turant abhi..."
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 4. SIMULATOR SCREEN ================= -->
+            <div class="screen-view" id="screenSimulator">
+                <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 4px;">Scam Call Simulator</h3>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;">
+                    Test real-time Hinglish speech transcription and DistilBERT panic trigger.
+                </p>
+
+                <div class="sample-chips">
+                    <div class="chip danger" onclick="loadSimulationScript('cbi')">CBI / Police Arrest</div>
+                    <div class="chip danger" onclick="loadSimulationScript('power')">Power Bill Cutoff</div>
+                    <div class="chip safe" onclick="loadSimulationScript('safe')">Safe Family Call</div>
+                </div>
+
+                <textarea id="simScript" class="form-input" style="height: 100px; resize: none;"></textarea>
+
+                <button class="btn-call-guardian" onclick="runSimulation()"
+                    style="background: var(--danger-red); margin-bottom: 12px;">
+                    ▶️ Run Live Call Simulation
+                </button>
+
+                <div id="simProgressBox"
+                    style="display: none; background: var(--surface-dark); border-radius: 12px; padding: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--warning-gold); margin-bottom: 4px;"
+                        id="simStatus">
+                        Transcribing audio stream...
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-secondary);" id="simDetails">
+                        Evaluating keywords: ["urgent", "arrest", "10 min", "AnyDesk"]
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 5. GUARDIAN SETUP SCREEN ================= -->
+            <div class="screen-view" id="screenGuardian">
+                <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 4px;">Family Guardian Setup</h3>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;">
+                    Primary contact alerted via SMS/FCM when scam occurs.
+                </p>
+
+                <label style="font-size: 12px; color: var(--text-secondary);">Guardian Name:</label>
+                <input type="text" id="gName" class="form-input" value="Rohan">
+
+                <label style="font-size: 12px; color: var(--text-secondary);">Mobile Number:</label>
+                <input type="text" id="gPhone" class="form-input" value="+91 98765 43210">
+
+                <label style="font-size: 12px; color: var(--text-secondary);">Relationship:</label>
+                <input type="text" id="gRel" class="form-input" value="Son (बेटा)">
+
+                <button class="btn-call-guardian" onclick="saveGuardian()">
+                    💾 Save Guardian Settings
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('home')">
+                <div class="nav-icon">🛡️</div>
+                <span>Shield</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('linkChecker')">
+                <div class="nav-icon">🔗</div>
+                <span>Link</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('logs')">
+                <div class="nav-icon">📞</div>
+                <span>Logs</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('simulator')">
+                <div class="nav-icon">⚡</div>
+                <span>Test</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('guardian')">
+                <div class="nav-icon">⚙️</div>
+                <span>Guard</span>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div class="toast" id="toastMessage"></div>
+    </div>
+
+    <script>
+        let isShieldActive = true;
+        let isThreatActive = false;
+        let blockedCount = 3;
+        let moneySaved = 145000;
+
+        const scripts = {
+            cbi: "This is Inspector Sharma from Crime Branch Police. Urgent arrest warrant issued in 10 min. Do not disconnect! Immediately verify now or freeze account. Turant AnyDesk download karo.",
+            power: "Dear Consumer, your electricity power will be disconnected tonight at 9:30 PM. Pay bill immediately or freeze connection. Abhi turant verify now in 10 min.",
+            safe: "Hello Papa, this is Rohan. I will reach home by 8 PM. Please have your dinner on time."
+        };
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.screen-view').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            if (tabId === 'home') {
+                document.getElementById('screenHome').classList.add('active');
+                document.querySelectorAll('.nav-item')[0].classList.add('active');
+            } else if (tabId === 'linkChecker') {
+                document.getElementById('screenLinkChecker').classList.add('active');
+                document.querySelectorAll('.nav-item')[1].classList.add('active');
+            } else if (tabId === 'logs') {
+                document.getElementById('screenLogs').classList.add('active');
+                document.querySelectorAll('.nav-item')[2].classList.add('active');
+            } else if (tabId === 'simulator') {
+                document.getElementById('screenSimulator').classList.add('active');
+                document.querySelectorAll('.nav-item')[3].classList.add('active');
+                loadSimulationScript('cbi');
+            } else if (tabId === 'guardian') {
+                document.getElementById('screenGuardian').classList.add('active');
+                document.querySelectorAll('.nav-item')[4].classList.add('active');
+            }
+        }
+
+        function toggleShield() {
+            isShieldActive = !isShieldActive;
+            const label = document.getElementById('shieldToggleLabel');
+            const knob = document.querySelector('.toggle-knob');
+            const toggle = document.querySelector('.toggle-switch');
+
+            if (isShieldActive) {
+                label.innerText = 'ON';
+                label.style.color = 'var(--safe-green)';
+                knob.style.right = '2px';
+                toggle.style.background = 'var(--safe-green)';
+                showToast("UPI Rakshak Shield is Active & Protecting");
+            } else {
+                label.innerText = 'OFF';
+                label.style.color = 'var(--text-secondary)';
+                knob.style.right = '18px';
+                toggle.style.background = '#475569';
+                showToast("⚠️ Shield Paused");
+            }
+        }
+
+        function triggerThreatState(reason) {
+            isThreatActive = true;
+            document.getElementById('phoneContainer').classList.add('threat-active');
+            document.getElementById('shieldTitle').innerText = 'KHATRA / खतरा!';
+            document.getElementById('shieldSubtitle').innerText = 'Scam Urgency Detected! UPI apps frozen.\nफ्रॉड कॉल पकड़ा गया! UPI ब्लॉक है।';
+            document.getElementById('shieldIcon').innerText = '⚠️';
+            document.getElementById('callWarningBanner').style.display = 'block';
+
+            blockedCount++;
+            moneySaved += 25000;
+            document.getElementById('blockedCount').innerText = blockedCount;
+            document.getElementById('moneySavedText').innerText = '₹ ' + moneySaved.toLocaleString('en-IN');
+        }
+
+        function dismissCallWarning() {
+            document.getElementById('callWarningBanner').style.display = 'none';
+        }
+
+        function dismissThreat() {
+            isThreatActive = false;
+            document.getElementById('phoneContainer').classList.remove('threat-active');
+            document.getElementById('shieldTitle').innerText = 'SURAKSHIT / सुरक्षित';
+            document.getElementById('shieldSubtitle').innerText = 'Digital Bodyguard is Active & Watching.\nआपकी सुरक्षा चालू है - फोन सुरक्षित है।';
+            document.getElementById('shieldIcon').innerText = '🛡️';
+            dismissCallWarning();
+            dismissFreeze();
+            showToast("Threat Cleared. Shield is Green.");
+        }
+
+        function openUpiFreeze() {
+            document.getElementById('freezeOverlay').classList.add('active');
+        }
+
+        function dismissFreeze() {
+            document.getElementById('freezeOverlay').classList.remove('active');
+        }
+
+        function bypassFreeze() {
+            dismissFreeze();
+            dismissThreat();
+            showToast("Manual Override Approved by User");
+        }
+
+        function callGuardianAlert() {
+            showToast("🚨 Calling Rohan (+91 98765 43210) & sending emergency SMS...");
+        }
+
+        function sendWhatsAppAlert() {
+            showToast("💬 WhatsApp Alert: 'Alert: received fraud call, about to pay [PhonePe]' sent to Rohan");
+        }
+
+        function setUpiLink(url) {
+            document.getElementById('upiInput').value = url;
+            analyzeUpiLink();
+        }
+
+        function analyzeUpiLink() {
+            const url = document.getElementById('upiInput').value;
+            const resBox = document.getElementById('upiResultBox');
+            const resTitle = document.getElementById('upiResultTitle');
+            const resDesc = document.getElementById('upiResultDesc');
+
+            resBox.style.display = 'block';
+
+            if (url.includes('Army') || url.includes('Electricity')) {
+                resBox.style.borderColor = 'var(--danger-red)';
+                resTitle.innerText = '🚨 FRAUD DETECTED / फर्जी खाता!';
+                resTitle.style.color = 'var(--danger-red)';
+                resDesc.innerHTML = '<strong>MISMATCH FOUND:</strong> Payee claims to be government/army/electricity department but uses a personal consumer VPA (@paytm / @okhdfcbank). <em>Scammer is impersonating authority!</em>';
+            } else {
+                resBox.style.borderColor = 'var(--safe-green)';
+                resTitle.innerText = '✅ SAFE MERCHANT / प्रमाणित खाता';
+                resTitle.style.color = 'var(--safe-green)';
+                resDesc.innerHTML = 'Verified corporate merchant handle (@icici.corp). Legitimate transaction.';
+            }
+        }
+
+        function loadSimulationScript(type) {
+            document.getElementById('simScript').value = scripts[type];
+        }
+
+        function runSimulation() {
+            const script = document.getElementById('simScript').value;
+            const pBox = document.getElementById('simProgressBox');
+            const pStatus = document.getElementById('simStatus');
+            const pDetails = document.getElementById('simDetails');
+
+            pBox.style.display = 'block';
+            pStatus.innerText = '🎙️ Transcribing live Hinglish audio...';
+            pDetails.innerText = 'Extracting panic features via DistilBERT...';
+
+            setTimeout(() => {
+                if (script.includes('arrest') || script.includes('police') || script.includes('disconnected')) {
+                    pStatus.innerText = '🚨 Urgency Score: 0.94 (FRAUD DETECTED)';
+                    pDetails.innerText = 'Matched keywords: ["urgent", "10 min", "AnyDesk", "freeze"]. Confidence: 96%';
+                    triggerThreatState("CBI / Police Impersonation Urgency");
+                    setTimeout(() => {
+                        switchTab('home');
+                        openUpiFreeze();
+                    }, 1200);
+                } else {
+                    pStatus.innerText = '✅ Call Safe (Score: 0.12)';
+                    pDetails.innerText = 'Normal conversation pattern. Zero financial urgency detected.';
+                }
+            }, 1400);
+        }
+
+        function saveGuardian() {
+            const name = document.getElementById('gName').value;
+            showToast(`Guardian updated: ${name} saved successfully!`);
+            setTimeout(() => switchTab('home'), 800);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastMessage');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>
